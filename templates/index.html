@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Predicciones PRO ⚽</title>
+
+<style>
+body {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial;
+    text-align: center;
+}
+
+h1 {
+    color: #22c55e;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.grupo {
+    background: #1e293b;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+}
+
+button {
+    margin: 10px;
+    padding: 10px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn1 { background: #22c55e; }
+.btn2 { background: #38bdf8; }
+
+.card {
+    background: #1e293b;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.bracket {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.columna {
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 10px;
+    min-width: 200px;
+}
+
+.columna h2 {
+    color: #22c55e;
+}
+
+.match {
+    background: #1e293b;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.match:hover {
+    transform: scale(1.05);
+}
+
+.score {
+    font-weight: bold;
+    color: #22c55e;
+}
+
+.winner {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 5px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>⚽ SISTEMA DE PREDICCIONES</h1>
+
+<button class="btn2" onclick="verEliminatorias()">Ver Eliminatorias</button>
+
+<div class="container">
+    {% for grupo, equipos in grupos.items() %}
+    <div class="grupo">
+        <h3>{{ grupo }}</h3>
+        {% for equipo in equipos %}
+            <p>{{ equipo }}</p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+<h2 id="campeon"></h2>
+
+<div id="resultados"></div>
+
+<script>
+function verEliminatorias() {
+    fetch("/eliminatorias")
+    .then(res => res.json())
+    .then(data => {
+
+        const cont = document.getElementById("resultados");
+        cont.innerHTML = "";
+
+        let html = `<div class="bracket">`;
+
+        for (let ronda in data.rondas) {
+
+            html += `<div class="columna">
+                        <h2>${ronda}</h2>`;
+
+            data.rondas[ronda].forEach(p => {
+                html += `
+                <div class="match">
+                    <div>${p.e1}</div>
+                    <div class="score">${p.g1} - ${p.g2}</div>
+                    <div>${p.e2}</div>
+                    <div class="winner">🏆 ${p.ganador}</div>
+                </div>
+                `;
+            });
+
+            html += `</div>`;
+        }
+
+        html += `</div>`;
+
+        cont.innerHTML = html;
+
+        document.getElementById("campeon").innerText =
+            "🏆 CAMPEÓN: " + data.campeon;
+    });
+}
+</script>
+
+</body>
+</html>
